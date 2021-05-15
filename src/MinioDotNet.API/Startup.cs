@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Minio;
 
@@ -18,14 +19,14 @@ namespace MinioDotNet.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.Configure<MinioOptions>(Configuration.GetSection(nameof(MinioOptions)));
             
             services.AddSingleton(sp =>
             {
-                var endpoint = "";
-                var accessKey = "";
-                var secretKey = "";
+                var options = sp.GetRequiredService<IOptionsMonitor<MinioOptions>>().CurrentValue;
                 
-                return new MinioClient(endpoint, accessKey, secretKey).WithSSL();
+                return new MinioClient(options.Endpoint, options.AccessKey, options.SecretKey);
             });
             
             services.AddSwaggerGen(c =>

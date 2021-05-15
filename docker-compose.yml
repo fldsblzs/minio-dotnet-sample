@@ -22,6 +22,7 @@ services:
     image: local/minio-dotnet-api:latest
     environment:
       ASPNETCORE_URLS: "http://0.0.0.0:5000"
+      ASPNETCORE_ENVIRONMENT: Docker
     ports:
       - "5000:5000"
 
