@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  minio:
+    container_name: minio
+    restart: on-failure
+    image: minio/minio
+    volumes:
+      - miniodata:/data
+    expose:
+      - "9000"
+    command: server /data
+
+  api:  
+    container_name: minio-dotnet-api
+    restart: on-failure
+    depends_on:
+      - minio
+    build:
+      context: .
+      dockerfile: src/MinioDotNet.API/Dockerfile
+    image: local/minio-dotnet-api:latest
+    environment:
+      ASPNETCORE_URLS: "http://0.0.0.0:5000"
+    ports:
+      - "5000:5000"
+
+volumes:
+  miniodata:
